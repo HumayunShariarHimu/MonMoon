@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MonMoon</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Noto Sans Bengali',sans-serif;
+  background: linear-gradient(135deg,#0a0a0a,#111);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  padding:20px;
+}
+.container{
+  width:100%;
+  max-width:520px;
+  background: rgba(255,255,255,0.06);
+  border-radius:25px;
+  padding:35px 25px;
+  text-align:center;
+  backdrop-filter: blur(12px);
+  box-shadow:0 15px 35px rgba(0,0,0,0.7);
+  position: relative;
+}
+h1{
+  font-size:2em;
+  margin-bottom:20px;
+  color:#00ffe0;
+  letter-spacing:1px;
+}
+p{
+  font-size:1.1em;
+  line-height:1.6;
+  margin:20px 0;
+  opacity:0;
+  animation:fadeIn 0.8s forwards;
+}
+button{
+  background:#00ffe0;
+  color:#000;
+  border:none;
+  padding:12px 30px;
+  font-size:17px;
+  font-weight:bold;
+  border-radius:12px;
+  cursor:pointer;
+  transition: all 0.3s ease;
+  margin-top:20px;
+}
+button:hover{background:#00c3aa}
+#result{
+  font-size:1.3em;
+  line-height:1.6;
+  margin-top:25px;
+  color:#fffdcc;
+  opacity:0;
+  animation:fadeIn 1s forwards;
+}
+@keyframes fadeIn{
+  from{opacity:0; transform: translateY(15px);}
+  to{opacity:1; transform: translateY(0);}
+}
+@media(max-width:600px){
+  h1{font-size:1.5em}
+  p{font-size:1em}
+  button{font-size:16px;padding:10px 25px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>MonMoon</h1>
+  <p id="text">প্রথমে তোমার জীবনের একটি ঘটনা মনে করো — যা তোমার হৃদয়ে গভীরভাবে রয়ে গেছে।</p>
+  <button id="nextBtn" onclick="nextStep()">Next</button>
+  <div id="result"></div>
+</div>
+
+<script>
+const steps=[
+  "সেই মুহূর্তের স্থান এবং পরিবেশ মনে করো। চারপাশের শব্দ, আলো, ঘ্রাণ সবকিছু মনেপ্রাণে অনুভব করো।",
+  "ঘটনায় যেসব মানুষ যুক্ত ছিল তাদের মুখাভিনয়, কণ্ঠস্বর এবং শরীরের ভাষা মনে করো।",
+  "তুমি সেই সময় কেমন অনুভব করছিলে? ভীতি, আনন্দ, দুঃখ, উৎকণ্ঠা, শান্তি — সব অনুভূতি একসাথে অনুভব করো।",
+  "শরীরের অনুভূতি মনোযোগ দিয়ে লক্ষ্য করো — হৃৎস্পন্দন, শ্বাসপ্রশ্বাস, হাত-পা, গরম বা ঠাণ্ডা।",
+  "ছোট ছোট ঘটনা মনে করো — শব্দ, আলো, স্পর্শ, গন্ধ এবং পরিবেশের সবকিছু।",
+  "যে সিদ্ধান্ত বা পদক্ষেপ তুমি নিয়েছিলে তা মনে করো। নিজের ভাবনাগুলো, ভয়, আশা এবং অনিশ্চয়তা সব খুঁজে বের করো।",
+  "ঘটনার প্রভাব এখনো তোমার জীবনে কীভাবে আছে তা অনুভব করো।",
+  "আমি যা পড়েছি তা হলো তোমার জীবনের সবচেয়ে গভীর এবং ব্যক্তিগত অভিজ্ঞতা।"
+];
+
+const events=[
+  "তুমি এক প্রিয়জনকে হারানোর গভীর স্মৃতি মনে করছো।",
+  "তুমি জীবনের সবচেয়ে বড় সফলতার মুহূর্ত মনে করছো।",
+  "তুমি এক বন্ধুর সাথে গুরুত্বপূর্ণ মুহূর্ত মনে করছো।",
+  "তুমি এক সময়ের ভয় বা অনিশ্চয়তা গভীরভাবে মনে করছো।",
+  "তুমি একটি ছোট কিন্তু জীবনের উপর বড় প্রভাব ফেলানো আনন্দের মুহূর্ত মনে করছো।",
+  "তুমি জীবনের একটি গুরুত্বপূর্ণ সিদ্ধান্তের মুহূর্ত মনে করছো।",
+  "তুমি নিজের প্রতি গর্ব অনুভব করেছিলে এমন একটি মুহূর্ত মনে করছো।",
+  "তুমি কাউকে ক্ষমা করেছিলে বা ক্ষমা পেয়েছিলে এমন একটি অভিজ্ঞতা মনে করছো।"
+];
+
+let step=0;
+
+function nextStep(){
+  const textEl=document.getElementById("text");
+  const resultEl=document.getElementById("result");
+  const btn=document.getElementById("nextBtn");
+
+  if(step<steps.length){
+    textEl.style.opacity=0;
+    textEl.innerHTML=steps[step];
+    setTimeout(()=>{textEl.style.opacity=1},50);
+    step++;
+  }else{
+    const chosen=events[Math.floor(Math.random()*events.length)];
+    textEl.style.display="none";
+    btn.style.display="none";
+    resultEl.innerHTML="তোমার মনের সবচেয়ে গভীর অভিজ্ঞতা হলো:<br><br><b>"+chosen+"</b>";
+    resultEl.style.opacity=0;
+    setTimeout(()=>{resultEl.style.opacity=1},50);
+  }
+}
+</script>
+</body>
+</html>
